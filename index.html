@@ -1,1 +1,365 @@
-<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0; url=privacy/"><title>0 HP Racing</title><a href="privacy/">0 HP Racing – Privacy</a>
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0 HP Racing</title>
+<meta name="description" content="Macchinine in miniatura mosse solo dalla gravità, su plastici costruiti a mano. Componi la tua pista e sfida gli amici. / Miniature cars driven by gravity alone.">
+<meta property="og:title" content="0 HP Racing">
+<meta property="og:description" content="Zero cavalli. Solo gravità. · Zero horsepower. Pure gravity.">
+<meta property="og:image" content="https://idelbgames.github.io/0hp-racing/img/alpi-plastico.jpg">
+<link rel="icon" href="img/icona.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800;900&display=swap" rel="stylesheet">
+<style>
+  /* I colori del gioco: inchiostro, carta, ambra della regia. */
+  :root {
+    --night: #0a0d1a; --ink: #15171e; --paper: #f3f4f6; --amber: #ffb020;
+    --text: #e9ebf0; --muted: #a3a8b5; --line: #262b3a;
+    --slant: 18px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; color: var(--text); background: var(--night);
+    font: 17px/1.6 "Archivo", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    overflow-x: hidden;
+  }
+  html[lang="it"] .en, html[lang="en"] .it { display: none !important; }
+  img, video { display: block; max-width: 100%; }
+  a { color: inherit; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 16px; }
+
+  /* Le scie luminose dello sfondo, come nella Home del gioco. */
+  .trails { position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background: radial-gradient(ellipse at 25% 15%, #141a33 0%, transparent 60%), radial-gradient(ellipse at 80% 85%, #10162a 0%, transparent 55%), var(--night); }
+  .trails svg { width: 100%; height: 100%; }
+  .trails path { fill: none; stroke-linecap: round; stroke-dasharray: 900 2400; animation: run 14s linear infinite; }
+  .trails path:nth-child(2) { animation-duration: 19s; animation-delay: -6s; }
+  .trails path:nth-child(3) { animation-duration: 23s; animation-delay: -11s; }
+  .trails path:nth-child(4) { animation-duration: 17s; animation-delay: -3s; }
+  @keyframes run { from { stroke-dashoffset: 3300; } to { stroke-dashoffset: 0; } }
+
+  /* Testata */
+  header { position: sticky; top: 0; z-index: 10; background: color-mix(in srgb, var(--night) 82%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+  .bar { display: flex; align-items: center; gap: 20px; height: 64px; }
+  .bar .logo img { height: 40px; width: auto; }
+  nav.links { display: flex; gap: 22px; margin-left: auto; font-weight: 600; font-size: 15px; }
+  nav.links a { text-decoration: none; color: var(--muted); }
+  nav.links a:hover { color: var(--text); }
+  .lang { display: flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+  .lang button { background: none; border: 0; color: var(--muted); font: 700 13px "Archivo", sans-serif; padding: 6px 10px; cursor: pointer; }
+  .lang button[aria-pressed="true"] { background: var(--amber); color: var(--ink); }
+  @media (max-width: 760px) { nav.links { display: none; } .lang { margin-left: auto; } }
+
+  /* Le bande inclinate: blocco ambra + banda chiara, come i titoli del gioco. */
+  .band { display: inline-flex; align-items: stretch; margin: 0 0 18px; max-width: 100%; filter: drop-shadow(0 6px 14px rgba(0,0,0,.35)); }
+  .band .tag { background: var(--amber); color: var(--ink); font-weight: 800; font-size: 15px; letter-spacing: .04em; text-transform: uppercase;
+    padding: 10px 26px 10px 18px; clip-path: polygon(0 0, 100% 0, calc(100% - var(--slant)) 100%, 0 100%); display: flex; align-items: center; }
+  .band .title { background: var(--paper); color: var(--ink); font-weight: 900; text-transform: uppercase; letter-spacing: .01em;
+    font-size: clamp(24px, 4vw, 40px); line-height: 1.1; padding: 10px 34px 10px 30px; margin-left: -14px;
+    clip-path: polygon(var(--slant) 0, 100% 0, calc(100% - var(--slant)) 100%, 0 100%); }
+  .lead { color: var(--muted); font-size: 19px; max-width: 62ch; margin: 0 0 28px; }
+  .lead b { color: var(--text); }
+  h3.big { font-size: 28px; text-transform: uppercase; font-weight: 900; margin: 0 0 10px; line-height: 1.15; }
+
+  section { padding: 84px 0; }
+  .reveal { opacity: 0; transform: translateX(-40px); transition: opacity .6s ease, transform .6s cubic-bezier(.2,.9,.25,1); }
+  .reveal.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } .trails path { animation: none; } }
+
+  /* Immagini come schermi del telefono */
+  .shot { border-radius: 16px; overflow: hidden; box-shadow: 0 0 0 6px #05070d, 0 24px 60px rgba(0,0,0,.55); background: #05070d; }
+  .shot img, .shot video { width: 100%; height: auto; aspect-ratio: 20 / 9; object-fit: cover; }
+  .cap { color: var(--muted); font-size: 14px; margin-top: 12px; }
+
+  /* Copertina */
+  .hero { padding: 56px 0 72px; }
+  .hero-grid { display: grid; grid-template-columns: 1fr; gap: 40px; }
+  .hero h1 { margin: 0; line-height: .95; text-transform: uppercase; font-weight: 900; font-size: clamp(38px, 5vw, 66px); letter-spacing: -.01em; }
+  .hero h1 .amber { color: var(--amber); display: block; }
+  .hero .sub { font-size: clamp(18px, 2.2vw, 22px); color: var(--muted); max-width: 54ch; margin: 22px 0 30px; }
+  .hero .sub b { color: var(--text); }
+  .cta { display: flex; flex-wrap: wrap; gap: 14px 22px; align-items: center; }
+  .btn { display: inline-flex; align-items: center; text-decoration: none; font-weight: 800; text-transform: uppercase; letter-spacing: .03em; }
+  .btn .blk { background: var(--amber); color: var(--ink); padding: 14px 30px 14px 18px; clip-path: polygon(0 0, 100% 0, calc(100% - 14px) 100%, 0 100%); }
+  .btn .lbl { background: var(--paper); color: var(--ink); padding: 14px 28px 14px 26px; margin-left: -12px; clip-path: polygon(14px 0, 100% 0, calc(100% - 14px) 100%, 0 100%); }
+  .btn:hover .lbl { background: #fff; }
+  .soon { color: var(--muted); font-size: 14px; }
+  @media (min-width: 980px) { .hero-grid { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); align-items: center; } }
+
+  /* Come si gioca: tre passi */
+  .steps { display: grid; gap: 28px; grid-template-columns: 1fr; counter-reset: s; }
+  @media (min-width: 900px) { .steps { grid-template-columns: repeat(3, 1fr); } }
+  .step h3 { display: flex; align-items: center; gap: 12px; margin: 18px 0 6px; font-size: 21px; text-transform: uppercase; font-weight: 800; }
+  .step h3::before { counter-increment: s; content: counter(s); background: var(--amber); color: var(--ink); font-weight: 900; width: 38px; height: 38px; display: grid; place-items: center;
+    clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%); flex: none; }
+  .step p { margin: 0; color: var(--muted); }
+
+  /* Trucchi */
+  .tricks { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-top: 36px; }
+  .trick { display: flex; align-items: stretch; background: #12151f; border: 1px solid var(--line); }
+  .trick .ic { width: 78px; background: var(--amber); display: grid; place-items: center; flex: none; clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%); }
+  .trick .ic img { width: 40px; height: 40px; object-fit: contain; filter: brightness(0); opacity: .88; }
+  .trick div.t { padding: 14px 16px; }
+  .trick b { display: block; font-size: 19px; text-transform: uppercase; font-weight: 900; letter-spacing: .02em; }
+  .trick span.d { color: var(--muted); font-size: 15px; }
+  .trick .dur { display: inline-block; background: var(--paper); color: var(--ink); font-weight: 800; font-size: 12px; padding: 1px 8px; margin-left: 8px; vertical-align: 3px; }
+
+  /* Il compositore: la sezione principale */
+  .composer { background: linear-gradient(180deg, transparent, rgba(255,176,32,.06) 12%, rgba(255,176,32,.06) 88%, transparent); }
+  .split { display: grid; gap: 40px; grid-template-columns: 1fr; align-items: center; }
+  @media (min-width: 980px) { .split { grid-template-columns: 6fr 5fr; } .split.rev { grid-template-columns: 5fr 6fr; } .split.rev > :first-child { order: 2; } }
+  .pieces { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 24px; padding: 0; list-style: none; }
+  .pieces li { background: var(--paper); color: var(--ink); font-weight: 700; font-size: 14px; padding: 6px 16px 6px 12px; clip-path: polygon(0 0, 100% 0, calc(100% - 9px) 100%, 0 100%); }
+  .pieces li.star { background: var(--amber); }
+  .facts { display: grid; gap: 14px; margin: 0; padding: 0; list-style: none; }
+  .facts li { display: flex; gap: 14px; align-items: flex-start; color: var(--muted); }
+  .facts li b { color: var(--text); }
+  .facts li::before { content: ""; width: 10px; height: 22px; background: var(--amber); flex: none; margin-top: 3px; clip-path: polygon(0 0, 100% 0, calc(100% - 4px) 100%, 0 100%); }
+  .duo { display: grid; gap: 20px; grid-template-columns: 1fr; margin-top: 44px; }
+  @media (min-width: 760px) { .duo { grid-template-columns: 1fr 1fr; } }
+  .code { display: inline-flex; margin-top: 8px; font: 800 18px/1 ui-monospace, Menlo, monospace; letter-spacing: .12em; background: #05070d; border: 1px dashed var(--muted); color: var(--amber); padding: 12px 16px; max-width: 100%; overflow-wrap: anywhere; }
+
+  /* Piste */
+  .tracks { display: grid; gap: 28px; grid-template-columns: 1fr; margin-top: 36px; }
+  @media (min-width: 900px) { .tracks { grid-template-columns: repeat(3, 1fr); } }
+  .track h3 { margin: 16px 0 4px; }
+  .track h3 .n { display: inline-block; background: var(--paper); color: var(--ink); font-weight: 900; font-size: 24px; padding: 4px 22px 4px 14px; clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%); }
+  .track p { margin: 4px 0 0; color: var(--muted); font-size: 15px; }
+  .gp { margin-top: 64px; display: grid; gap: 28px; grid-template-columns: 1fr; align-items: center; }
+  @media (min-width: 900px) { .gp { grid-template-columns: 1fr 1fr; } }
+
+  /* Galleria */
+  .gallery { display: grid; gap: 16px; grid-template-columns: 1fr; margin-top: 56px; }
+  @media (min-width: 760px) { .gallery { grid-template-columns: 1fr 1fr; } }
+
+  footer { border-top: 1px solid var(--line); padding: 40px 0 56px; color: var(--muted); font-size: 15px; }
+  footer .row { display: flex; flex-wrap: wrap; gap: 16px 32px; align-items: center; }
+  footer img { height: 34px; width: auto; }
+  footer a { color: var(--text); }
+</style>
+</head>
+<body>
+<div class="trails" aria-hidden="true">
+  <svg viewBox="0 0 1600 1000" preserveAspectRatio="none">
+    <defs>
+      <linearGradient id="w" x1="0" x2="1"><stop offset="0" stop-color="#c9c3b4" stop-opacity="0"/><stop offset=".8" stop-color="#e8e2d2" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity=".7"/></linearGradient>
+      <linearGradient id="r" x1="0" x2="1"><stop offset="0" stop-color="#c0262c" stop-opacity="0"/><stop offset=".8" stop-color="#c0262c" stop-opacity=".55"/><stop offset="1" stop-color="#ff4040" stop-opacity=".8"/></linearGradient>
+    </defs>
+    <path d="M-200 220 C 300 140, 800 330, 1800 210" stroke="url(#w)" stroke-width="3"/>
+    <path d="M-200 560 C 400 420, 1000 640, 1800 420" stroke="url(#r)" stroke-width="2.5"/>
+    <path d="M-200 820 C 500 740, 1100 900, 1800 760" stroke="url(#w)" stroke-width="2.5"/>
+    <path d="M-200 90 C 600 40, 1100 160, 1800 70" stroke="url(#r)" stroke-width="2"/>
+  </svg>
+</div>
+
+<header>
+  <div class="wrap bar">
+    <a class="logo" href="#top" aria-label="0 HP Racing"><img src="img/logo.svg" alt="0 HP Racing" width="60" height="40"></a>
+    <nav class="links">
+      <a href="#gioco"><span class="it">Il gioco</span><span class="en">The game</span></a>
+      <a href="#trucchi"><span class="it">Trucchi</span><span class="en">Tricks</span></a>
+      <a href="#componi"><span class="it">Componi</span><span class="en">Build</span></a>
+      <a href="#piste"><span class="it">Piste</span><span class="en">Tracks</span></a>
+    </nav>
+    <div class="lang" role="group" aria-label="Lingua / Language">
+      <button type="button" data-l="it" aria-pressed="true">IT</button>
+      <button type="button" data-l="en" aria-pressed="false">EN</button>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+  <!-- Copertina -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="reveal">
+        <h1><span class="it">Zero cavalli.</span><span class="en">Zero horsepower.</span><span class="amber"><span class="it">Solo gravità.</span><span class="en">Pure gravity.</span></span></h1>
+        <p class="sub">
+          <span class="it">Macchinine in miniatura che scendono a tutta velocità su plastici costruiti a mano. <b>Niente motore, niente acceleratore</b>: vince chi regola l'assetto giusto e usa il trucco al momento giusto. E quando hai provato tutte le piste… <b>costruisci la tua.</b></span>
+          <span class="en">Miniature cars racing downhill on handmade model boards. <b>No engine, no throttle</b>: you win with the right setup and the right trick at the right moment. And when you've tried every track… <b>build your own.</b></span>
+        </p>
+        <div class="cta">
+          <a class="btn" href="#componi"><span class="blk"><span class="it">Componi</span><span class="en">Build</span></span><span class="lbl"><span class="it">La tua pista</span><span class="en">Your track</span></span></a>
+          <span class="soon"><span class="it">Presto su Google Play · Android</span><span class="en">Coming soon to Google Play · Android</span></span>
+        </div>
+      </div>
+      <div class="reveal">
+        <div class="shot"><img src="img/alpi-plastico.jpg" alt="Il plastico di ALPI nel laboratorio, visto dall'alto" width="1600" height="720"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Come si gioca -->
+  <section id="gioco">
+    <div class="wrap">
+      <div class="band reveal"><span class="tag"><span class="it">Il gioco</span><span class="en">The game</span></span><span class="title"><span class="it">Come si gioca</span><span class="en">How it works</span></span></div>
+      <p class="lead reveal"><span class="it">Una discesa dura pochi secondi, ma non ce n'è una uguale all'altra: le macchine pesano, slittano, si urtano e volano sui salti. <b>La fisica fa tutto il resto.</b></span><span class="en">A run lasts a few seconds, but no two are alike: cars have weight, they slide, bump into each other and fly off the jumps. <b>Physics does the rest.</b></span></p>
+      <div class="steps">
+        <div class="step reveal">
+          <div class="shot"><img src="img/assetto.jpg" alt="" loading="lazy" width="1600" height="720"></div>
+          <h3><span class="it">Scegli e regola</span><span class="en">Pick and tune</span></h3>
+          <p><span class="it">Scegli la tua macchina e regola zavorra, peso e gomme. Ogni regolazione dà qualcosa e toglie qualcos'altro.</span><span class="en">Pick your car and tune ballast, weight and tyres. Every change gives something and takes something away.</span></p>
+        </div>
+        <div class="step reveal">
+          <div class="shot"><img src="img/partenza.jpg" alt="" loading="lazy" width="1600" height="720"></div>
+          <h3><span class="it">Si scende</span><span class="en">Let it roll</span></h3>
+          <p><span class="it">Il semaforo diventa verde e da lì in poi conta solo la pendenza: discese, tornanti, viadotti e un salto prima del traguardo.</span><span class="en">The light turns green and from then on only the slope matters: descents, hairpins, viaducts and a jump before the finish.</span></p>
+        </div>
+        <div class="step reveal">
+          <div class="shot"><img src="img/fantasma.jpg" alt="" loading="lazy" width="1600" height="720"></div>
+          <h3><span class="it">Usa i trucchi</span><span class="en">Use your tricks</span></h3>
+          <p><span class="it">Hai pochi tocchi a disposizione: una spinta, un passaggio da fantasma, una raddrizzata. Il momento giusto vale la vittoria.</span><span class="en">You only get a few taps: a push, a ghost pass, a straighten-up. The right moment wins the race.</span></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trucchi -->
+  <section id="trucchi">
+    <div class="wrap">
+      <div class="band reveal"><span class="tag"><span class="it">In gara</span><span class="en">Racing</span></span><span class="title"><span class="it">Quattro trucchi</span><span class="en">Four tricks</span></span></div>
+      <p class="lead reveal"><span class="it">Quattro pulsanti, sempre sotto il pollice. Boost, Fantasma ed ESP hanno una carica per giro, e i checkpoint li ricaricano; il Rientro c'è sempre.</span><span class="en">Four buttons, always under your thumb. Boost, Ghost and ESP get one charge per lap, and checkpoints refill them; Respawn is always there.</span></p>
+      <div class="tricks">
+        <div class="trick reveal"><span class="ic"><img src="img/icone/boost.png" alt="" width="40" height="40"></span><div class="t"><b>Boost <span class="dur">1 s</span></b><span class="d"><span class="it">Una spinta, con le ruote a terra.</span><span class="en">A push, with your wheels on the ground.</span></span></div></div>
+        <div class="trick reveal"><span class="ic"><img src="img/icone/ghost.png" alt="" width="40" height="40"></span><div class="t"><b><span class="it">Fantasma</span><span class="en">Ghost</span> <span class="dur">2 s</span></b><span class="d"><span class="it">Passi attraverso gli avversari.</span><span class="en">Pass straight through your rivals.</span></span></div></div>
+        <div class="trick reveal"><span class="ic"><img src="img/icone/esp.png" alt="" width="40" height="40"></span><div class="t"><b>ESP <span class="dur">2 s</span></b><span class="d"><span class="it">La macchina torna dritta.</span><span class="en">Your car straightens up.</span></span></div></div>
+        <div class="trick reveal"><span class="ic"><img src="img/icone/rescue.png" alt="" width="40" height="40"></span><div class="t"><b><span class="it">Rientro</span><span class="en">Respawn</span> <span class="dur"><span class="it">sempre</span><span class="en">always</span></span></b><span class="d"><span class="it">Sei volato fuori? Torni in pista.</span><span class="en">Flew off? Back on track.</span></span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Il compositore -->
+  <section id="componi" class="composer">
+    <div class="wrap">
+      <div class="band reveal"><span class="tag"><span class="it">Componi</span><span class="en">Build</span></span><span class="title"><span class="it">La tua pista</span><span class="en">Your own track</span></span></div>
+      <p class="lead reveal"><span class="it">Il cuore di 0 HP Racing: <b>costruisci le tue piste pezzo per pezzo</b>, guardale prendere forma sul tavolo del laboratorio e corrici sopra un attimo dopo.</span><span class="en">The heart of 0 HP Racing: <b>build your own tracks piece by piece</b>, watch them take shape on the workshop table and race them a moment later.</span></p>
+
+      <div class="split">
+        <div class="reveal">
+          <div class="shot"><video src="img/componi.mp4" poster="img/componi-poster.jpg" autoplay muted loop playsinline preload="metadata" aria-label="Una pista composta pezzo per pezzo"></video></div>
+          <p class="cap"><span class="it">Una pista composta sul telefono, pezzo per pezzo (video accelerato).</span><span class="en">A track built on the phone, piece by piece (sped up).</span></p>
+        </div>
+        <div class="reveal">
+          <ul class="pieces" aria-label="Pezzi">
+            <li><span class="it">Rettilinei</span><span class="en">Straights</span></li>
+            <li><span class="it">Curve</span><span class="en">Curves</span></li>
+            <li><span class="it">Curvoni</span><span class="en">Sweepers</span></li>
+            <li><span class="it">Tornanti</span><span class="en">Hairpins</span></li>
+            <li><span class="it">Curve a U</span><span class="en">U-turns</span></li>
+            <li class="star"><span class="it">Giro della morte</span><span class="en">Loop-the-loop</span></li>
+            <li class="star"><span class="it">Spirale incrociata</span><span class="en">Crossed spiral</span></li>
+          </ul>
+          <ul class="facts">
+            <li><span><span class="it"><b>Tocca un pezzo</b> e si aggancia in fondo alla pista. Tocca un tratto e i nuovi pezzi vanno subito dopo.</span><span class="en"><b>Tap a piece</b> and it snaps onto the end of the track. Tap a section and new pieces go right after it.</span></span></li>
+            <li><span><span class="it"><b>Fino a 24 pezzi</b> su tre paesaggi: montagna, deserto e giungla.</span><span class="en"><b>Up to 24 pieces</b> on three landscapes: mountains, desert and jungle.</span></span></li>
+            <li><span><span class="it"><b>Checkpoint dove vuoi</b>: lì le macchine ricaricano i trucchi.</span><span class="en"><b>Checkpoints wherever you like</b>: cars refill their tricks there.</span></span></li>
+            <li><span><span class="it"><b>Sempre corribile</b>: il gioco ti avverte se l'arrivo esce dal tavolo o tocca la pista.</span><span class="en"><b>Always raceable</b>: the game warns you if the finish leaves the table or hits the track.</span></span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="split rev" style="margin-top:72px">
+        <div class="reveal">
+          <div class="shot"><video src="img/tua-pista.mp4" poster="img/tua-pista-poster.jpg" autoplay muted loop playsinline preload="metadata" aria-label="La gara sulla pista appena composta"></video></div>
+          <p class="cap"><span class="it">La stessa pista, un minuto dopo: sorretta dai droni sopra il tavolo, con il giro della morte.</span><span class="en">The same track, a minute later: held up by drones above the table, loop included.</span></p>
+        </div>
+        <div class="reveal">
+          <h3 class="big"><span class="it">Poi si corre</span><span class="en">Then you race</span></h3>
+          <p class="lead" style="margin-bottom:18px"><span class="it">Premi VIA e la tua pista diventa vera: i droni la tengono sospesa sopra il tavolo del laboratorio, le macchine si lanciano dalla rampa e il cronometro segna il tuo record.</span><span class="en">Tap GO and your track becomes real: drones hold it above the workshop table, the cars launch off the ramp and the clock keeps your record.</span></p>
+          <p class="lead" style="margin:0"><span class="it">Ogni pista finisce in <b>LE MIE PISTE</b>, con il numero di pezzi e il record da battere.</span><span class="en">Every track goes into <b>MY TRACKS</b>, with its piece count and the record to beat.</span></p>
+        </div>
+      </div>
+
+      <div class="duo">
+        <div class="reveal"><div class="shot"><img src="img/tua-pista-tavolo.jpg" alt="La pista composta sul tavolo del laboratorio, vista dall'alto" loading="lazy" width="1600" height="720"></div></div>
+        <div class="reveal"><div class="shot"><img src="img/tua-pista-giro.jpg" alt="Una macchina in gara, con il giro della morte sullo sfondo" loading="lazy" width="1600" height="720"></div></div>
+      </div>
+
+      <div class="split" style="margin-top:72px">
+        <div class="reveal">
+          <h3 class="big"><span class="it">Condividila con un codice</span><span class="en">Share it with a code</span></h3>
+          <p class="lead" style="margin-bottom:10px"><span class="it">Ogni pista diventa un codice corto. Mandalo con l'app che preferisci: chi lo riceve lo incolla nel gioco e corre sulla tua pista, per battere il tuo tempo.</span><span class="en">Every track turns into a short code. Send it with any app: whoever gets it pastes it into the game and races your track to beat your time.</span></p>
+          <span class="code" aria-hidden="true">4K7T-2QXM-9B3D-H8RW</span>
+          <p class="cap"><span class="it">Un esempio di codice. Nessun account e nessun server: dentro il codice c'è tutta la pista.</span><span class="en">A sample code. No account and no server: the whole track is inside the code.</span></p>
+        </div>
+        <div class="reveal">
+          <div class="shot"><img src="img/componi.jpg" alt="Il compositore di piste con la lista dei pezzi" loading="lazy" width="1600" height="720"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Le piste -->
+  <section id="piste">
+    <div class="wrap">
+      <div class="band reveal"><span class="tag">Vertigo</span><span class="title"><span class="it">Tre plastici</span><span class="en">Three boards</span></span></div>
+      <p class="lead reveal"><span class="it">Tre paesaggi in miniatura, costruiti come veri plastici dentro un laboratorio di modellismo. Ognuno in <b>quattro versioni</b>: d'estate e d'inverno, di giorno e di notte. D'inverno si scivola.</span><span class="en">Three miniature landscapes, built like real model boards inside a modelling workshop. Each in <b>four versions</b>: summer and winter, day and night. In winter, it gets slippery.</span></p>
+      <div class="tracks">
+        <div class="track reveal">
+          <div class="shot"><img src="img/alpi-viadotto.jpg" alt="ALPI: il viadotto in pietra con il pubblico" loading="lazy" width="1600" height="720"></div>
+          <h3><span class="n">ALPI</span></h3>
+          <p><span class="it">Abeti, un paesino e un grande viadotto in pietra prima del salto.</span><span class="en">Fir trees, a little village and a big stone viaduct before the jump.</span></p>
+        </div>
+        <div class="track reveal">
+          <div class="shot"><img src="img/canyon-notte.jpg" alt="CANYON di notte: la pista illuminata dai lampioni" loading="lazy" width="1600" height="720"></div>
+          <h3><span class="n">CANYON</span></h3>
+          <p><span class="it">Rocce rosse e pinnacoli. Di notte la pista si accende di lampioni.</span><span class="en">Red rocks and pinnacles. At night the track lights up with street lamps.</span></p>
+        </div>
+        <div class="track reveal">
+          <div class="shot"><img src="img/giungla-traguardo.jpg" alt="GIUNGLA: il traguardo in mezzo alla foresta" loading="lazy" width="1600" height="720"></div>
+          <h3><span class="n">GIUNGLA</span></h3>
+          <p><span class="it">Foresta fitta, cascate e un ponte di radici sopra la valle.</span><span class="en">Dense forest, waterfalls and a bridge of roots over the valley.</span></p>
+        </div>
+      </div>
+
+      <div class="gp">
+        <div class="reveal">
+          <h3 class="big"><span class="it">Il Gran Premio</span><span class="en">The Grand Prix</span></h3>
+          <p class="lead" style="margin-bottom:14px"><span class="it">Fino a <b>16 auto</b> divise in gironi sulle tre piste. Scegli la tua squadra, guida le tue auto e lascia le altre all'intelligenza artificiale. Si passa il turno a punti, fino alla finale.</span><span class="en">Up to <b>16 cars</b> split into groups across the three tracks. Pick your team, drive your cars and leave the rest to the AI. Advance on points, all the way to the final.</span></p>
+          <p class="lead" style="margin:0"><span class="it">Oppure una <b>gara singola</b> da 2 o 4 auto, quando hai solo un minuto.</span><span class="en">Or a quick <b>single race</b> with 2 or 4 cars, when you only have a minute.</span></p>
+        </div>
+        <div class="reveal"><div class="shot"><img src="img/risultati.jpg" alt="La classifica finale di una gara" loading="lazy" width="1600" height="720"></div></div>
+      </div>
+
+      <div class="gallery">
+        <div class="shot reveal"><img src="img/giungla-plastico.jpg" alt="Il plastico di GIUNGLA visto dall'alto" loading="lazy" width="1600" height="720"></div>
+        <div class="shot reveal"><img src="img/canyon-traguardo.jpg" alt="Il traguardo di CANYON di notte" loading="lazy" width="1600" height="720"></div>
+        <div class="shot reveal"><img src="img/alpi-traguardo.jpg" alt="Il traguardo di ALPI con il pubblico" loading="lazy" width="1600" height="720"></div>
+        <div class="shot reveal"><img src="img/presentazione.jpg" alt="La presentazione di una macchina prima della gara" loading="lazy" width="1600" height="720"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap row">
+    <img src="img/logo.svg" alt="0 HP Racing" width="51" height="34">
+    <span>© 2026 idelbgames</span>
+    <a href="privacy/"><span class="it">Informativa privacy</span><span class="en">Privacy policy</span></a>
+    <a href="mailto:idelbgames@gmail.com">idelbgames@gmail.com</a>
+    <span>Italiano · English · Deutsch · Français · Español</span>
+  </div>
+</footer>
+
+<script>
+  // Lingua: quella del browser (italiano o inglese), poi la scelta del visitatore.
+  const root = document.documentElement;
+  function setLang(l) {
+    root.lang = l;
+    document.querySelectorAll(".lang button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.l === l)));
+    try { localStorage.setItem("lang", l); } catch (e) {}
+  }
+  let saved = null;
+  try { saved = localStorage.getItem("lang"); } catch (e) {}
+  setLang(saved || ((navigator.language || "").toLowerCase().startsWith("it") ? "it" : "en"));
+  document.querySelectorAll(".lang button").forEach(b => b.addEventListener("click", () => setLang(b.dataset.l)));
+
+  // Le bande entrano da sinistra quando arrivano sullo schermo, come nel gioco.
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: .12 });
+  document.querySelectorAll(".reveal").forEach((el, i) => { el.style.transitionDelay = (i % 4) * 70 + "ms"; io.observe(el); });
+</script>
+</body>
+</html>
